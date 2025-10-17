@@ -1,0 +1,13 @@
+name: Manage infrastructure
+
+on:
+    workflow_dispatch
+
+jobs:
+    manage-infra:
+        name: Manage infra
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Placeholder
+              run: |
+                echo placeholder

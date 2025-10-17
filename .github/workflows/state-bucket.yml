@@ -1,0 +1,13 @@
+name: Provision S3 bucket for backend state storage
+
+on:
+    workflow_dispatch
+
+jobs:
+    state-bucket-create:
+        name: Create an S3 bucket
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Placeholder
+              run: |
+                echo placeholder

@@ -1,0 +1,13 @@
+name: On Push to Main Branch
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    main-branch-push:
+        name: Main Push
+        uses: keeonline/gh-workflows/.github/workflows/on-push-main.yml@v0.0.1
+        permissions:
+          contents: write
