@@ -13,12 +13,12 @@ jobs:
             - name: Configure credentials
               uses: aws-actions/configure-aws-credentials/@v4
               with:
-                role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT-ID}}:role/IaC
+                role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT_ID}}:role/IaC
                 aws-region: ${{secrets.AWS_REGION}}
 
             - name: Create the bucket
               run: |
                 aws s3api create-bucket \
-                  --bucket tf-state-bucket-${{secrets.AWS_ACCOUNT-ID}} \
+                  --bucket tf-state-bucket-${{secrets.AWS_ACCOUNT_ID}} \
                   --create-bucket-configuration LocationConstraint=${{secrets.AWS_REGION}} \
                   --object-lock-enabled-for-bucket    
