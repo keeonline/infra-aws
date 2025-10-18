@@ -6,8 +6,19 @@ on:
 jobs:
     state-bucket-create:
         name: Create an S3 bucket
+        permissions:
+            id-token: write
         runs-on: ubuntu-24.04
         steps:
-            - name: Placeholder
+            - name: Configure credentials
+              uses: aws-actions/configure-aws-credentials/@v4
+              with:
+                role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT-ID}}:role/IaC
+                aws-region: ${{secrets.AWS_REGION}}
+
+            - name: Create the bucket
               run: |
-                echo placeholder
+                aws s3api create-bucket \
+                  --bucket tf-state-bucket-${{secrets.AWS_ACCOUNT-ID}} \
+                  --create-bucket-configuration LocationConstraint=${{secrets.AWS_REGION}} \
+                  --object-lock-enabled-for-bucket    
