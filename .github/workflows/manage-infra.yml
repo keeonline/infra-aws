@@ -1,13 +1,53 @@
 name: Manage infrastructure
 
 on:
-    workflow_dispatch
+    workflow_dispatch:
+      inputs:
+        action:
+          type: choice
+          required: true
+          options:
+            - apply-plan
+            - apply
+            - destroy-plan
+            - destroy
+          default: apply-plan
+        environment:
+          type: environment
+          required: false
+          default: test
 
 jobs:
     manage-infra:
         name: Manage infra
         runs-on: ubuntu-24.04
+        permissions:
+            id-token: write
+        environment: ${{inputs.environment}}
         steps:
-            - name: Placeholder
+            - name: Get the artefact version values
+              id: versions
+              uses: keeonline/gh-actions/actions/artifact-version@feature-tf
+
+            - name: Set the infra version
+              id: infra_version
+              shell: bash
               run: |
-                echo placeholder
+                if [ "${{github.ref_type}}" == "branch" ]
+                then
+                  echo "value=${{steps.versions.outputs.branch}}" >> $GITHUB_OUTPUT
+                else
+                  echo "value=${{steps.versions.outputs.release}}" >> $GITHUB_OUTPUT
+                fi
+
+            - name: Execute Terraform
+              uses: keeonline/gh-actions/actions/terraform-cmd@feature-tf
+              env:
+                TF_VAR_infra_environment: ${{inputs.environment}}
+                TF_VAR_infra_version: ${{steps.infra_version.outputs.value}}
+                TF_VAR_infra_repo: ${{github.event.repository.name}}
+              with:
+                aws_account_id: ${{secrets.AWS_ACCOUNT_ID}}
+                aws-region: ${{secrets.AWS_REGION}}
+                action: ${{inputs.action}}
+                environment: ${{inputs.environment}}
