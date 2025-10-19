@@ -48,6 +48,6 @@ jobs:
                 TF_VAR_infra_repo: ${{github.event.repository.name}}
               with:
                 aws_account_id: ${{secrets.AWS_ACCOUNT_ID}}
-                aws-region: ${{secrets.AWS_REGION}}
+                aws_region: ${{secrets.AWS_REGION}}
                 action: ${{inputs.action}}
                 environment: ${{inputs.environment}}
