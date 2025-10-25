@@ -33,7 +33,7 @@ jobs:
               id: infra_version
               shell: bash
               run: |
-                if [ "${{github.ref_type}}"" == "branch" ]
+                if [ "${{github.ref_type}}" == "branch" ]
                 then
                   echo "value=${{steps.versions.outputs.branch}}" >> $GITHUB_OUTPUT
                 else
