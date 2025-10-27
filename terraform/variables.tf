@@ -9,3 +9,7 @@ variable "infra_repo" {
 variable "infra_environment" {
   type = string
 }
+
+variable "vpc_cidr" {
+  type = "string"
+}
