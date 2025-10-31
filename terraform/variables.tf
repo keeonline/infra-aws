@@ -13,3 +13,8 @@ variable "infra_environment" {
 variable "vpc_cidr" {
   type = string
 }
+
+variable "az_use_count" {
+  type = number
+  default = 2
+}
