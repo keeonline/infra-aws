@@ -1,6 +1,6 @@
 resource "aws_security_group" "alb" {
     name = "${var.infra_environment}-sg-alb"
-    vpc_id = aws_vpc.main
+    vpc_id = aws_vpc.main.id
 
     tags = {
         Name = "${var.infra_environment}-sg-alb"
