@@ -62,7 +62,7 @@ jobs:
               env:
                 TF_VAR_infra_environment: ${{inputs.environment}}
                 TF_VAR_infra_version: ${{steps.infra_version.outputs.value}}
-                TF_VAR_infra_repo: ${{github.event.repository.name}}
+                TF_VAR_infra_repo: ${{inputs.repo_name}}
                 TF_VAR_vpc_cidr: ${{inputs.vpc_cidr}}
               with:
                 aws_account_id: ${{secrets.AWS_ACCOUNT_ID}}
