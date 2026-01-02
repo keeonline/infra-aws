@@ -44,7 +44,7 @@ jobs:
 
             - name: Get the artefact version values
               id: versions
-              uses: keeonline/gh-actions/actions/artifact-version@feature-tfcmd
+              uses: keeonline/gh-actions/actions/artifact-version@v0.0.6
 
             - name: Set the infra version
               id: infra_version
@@ -58,7 +58,7 @@ jobs:
                 fi
 
             - name: Terraform action
-              uses: keeonline/gh-actions/actions/terraform-cmd@feature-tfcmd
+              uses: keeonline/gh-actions/actions/terraform-cmd@v0.0.6
               env:
                 TF_VAR_infra_environment: ${{inputs.environment}}
                 TF_VAR_infra_version: ${{steps.infra_version.outputs.value}}
