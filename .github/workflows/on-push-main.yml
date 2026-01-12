@@ -8,6 +8,6 @@ on:
 jobs:
     main-branch-push:
         name: Main Push
-        uses: keeonline/gh-workflows/.github/workflows/on-push-main.yml@v0.0.1
+        uses: keeonline/gh-workflows/.github/workflows/on-push-main.yml@v0.0.2
         permissions:
           contents: write
