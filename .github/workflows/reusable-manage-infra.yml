@@ -39,13 +39,13 @@ jobs:
 
             - name: Get the artefact version values
               id: infra_version
-              uses: keeonline/gh-actions/actions/artifact-version@feature-sdlc
+              uses: keeonline/gh-actions/actions/artifact-version@v0.0.8
               with:
                 repo_name: ${{inputs.repo_name}}
                 repo_ref: ${{inputs.repo_ref}}
 
             - name: Terraform action
-              uses: keeonline/gh-actions/actions/terraform-cmd@feature-sdlc
+              uses: keeonline/gh-actions/actions/terraform-cmd@v0.0.8
               env:
                 TF_VAR_infra_environment: ${{inputs.environment}}
                 TF_VAR_infra_version: ${{steps.infra_version.outputs.value}}
