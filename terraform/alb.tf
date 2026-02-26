@@ -66,11 +66,14 @@ resource "aws_lb_listener" "api_requests" {
     default_action {
       type = "fixed-response"
 
-      fixed_response {
-        content_type = "text/plain"
-        message_body = "The service you have requested is unavailable"
-        status_code = 503
-      }
+        fixed_response {
+        content_type = "application/json"
+        message_body = jsonencode(
+            { 
+            message = "The service you have requested is unavailable"
+            })
+        status_code  = "503"
+        }
     }
 
     tags = {
