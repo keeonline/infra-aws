@@ -1,0 +1,80 @@
+name: Pull request
+
+on:
+  pull_request:
+
+jobs:
+    smoke-config:
+        name: Get config
+        runs-on: ubuntu-24.04
+        outputs:
+            this_environment: ${{steps.values.outputs.this_environment}}
+            vpc_cidr: ${{steps.values.outputs.vpc_cidr}}
+            repo_ref: ${{github.head_ref}}
+        steps:
+          - name: Determine values
+            id: values
+            run: |
+              THIS=$(shuf -i 201-255 -n 1)
+              echo "this_environment=eph$THIS" >> $GITHUB_OUTPUT
+              echo "vpc_cidr=10.$THIS.0.0/16" >> $GITHUB_OUTPUT
+               
+    provision-infra:
+        name: Provision
+        needs: [ smoke-config ]
+        uses: ./.github/workflows/reusable-manage-infra.yml
+        permissions:
+            id-token: write
+        secrets:
+            inherit
+        with:
+          action: apply
+          environment: ${{ needs.smoke-config.outputs.this_environment }}
+          vpc_cidr: ${{ needs.smoke-config.outputs.vpc_cidr }}
+          repo_ref: ${{ needs.smoke-config.outputs.repo_ref }}
+
+    execute-smoke:
+      name: Run the smoke tests
+      needs: [ smoke-config, provision-infra ]
+      runs-on: ubuntu-24.04
+      permissions:
+        id-token: write
+      steps:
+        - name: Configure credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+              role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT_ID}}:role/IaC
+              aws-region: ${{secrets.AWS_REGION}}
+        - name: Get the application load balancer DNS name
+          id: alb_dns
+          run: |
+              ALB=$(aws elbv2 describe-load-balancers \
+                --names ${{needs.smoke-config.outputs.this_environment}}-alb \
+                --query 'LoadBalancers[*].[DNSName]' \
+                --output text)
+              echo "value=$ALB" >> $GITHUB_OUTPUT
+        - name: Checkout karate scripts
+          uses: actions/checkout@v4
+          with:
+            sparse-checkout: smoketest/karate
+        - name: Execute the smoke tests
+          uses: keeonline/gh-actions/actions/karate-tests@v0.0.8
+          with:
+            tests_directory: smoketest/karate
+            reports_upload_title: Smoke Test Reports
+            baseurl: http://${{steps.alb_dns.outputs.value}}
+
+    destroy-infra:
+        name: Destroy
+        needs: [ smoke-config, execute-smoke ]
+        if: always()
+        uses: ./.github/workflows/reusable-manage-infra.yml
+        permissions:
+            id-token: write
+        secrets:
+            inherit
+        with:
+          action: destroy
+          environment: ${{ needs.smoke-config.outputs.this_environment }}
+          vpc_cidr: ${{ needs.smoke-config.outputs.vpc_cidr }}
+          repo_ref: ${{ needs.smoke-config.outputs.repo_ref }}
